@@ -15,6 +15,8 @@ class GarbageItem(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"), nullable=False, comment="所属分类 ID")
     image_url = db.Column(db.String(512), nullable=True, comment="示例图片 URL")
     description = db.Column(db.Text, nullable=True, comment="物品说明")
+    components = db.Column(db.Text, nullable=True, comment="主要成分说明")
+    reason = db.Column(db.Text, nullable=True, comment="分类依据")
     tips = db.Column(db.Text, nullable=True, comment="投放小贴士，如：需清洗后投放")
     is_active = db.Column(db.Boolean, default=True, comment="是否启用")
     created_at = db.Column(db.DateTime, default=datetime.utcnow, comment="创建时间")
@@ -44,6 +46,8 @@ class GarbageItem(db.Model):
             "category_id": self.category_id,
             "image_url": self.image_url,
             "description": self.description,
+            "components": self.components,
+            "reason": self.reason,
             "tips": self.tips,
         }
         if include_category and self.category:

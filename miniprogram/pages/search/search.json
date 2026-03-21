@@ -1,1 +1,6 @@
-{"navigationBarTitleText": "search"}
+{
+  "navigationBarTitleText": "文字搜索",
+  "usingComponents": {
+    "category-badge": "/components/category-badge/category-badge"
+  }
+}

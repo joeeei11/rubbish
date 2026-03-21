@@ -1,4 +1,56 @@
-<!-- result 页面 — Phase 后续实现 -->
 <view class="container">
-  <text>result 页面开发中...</text>
+  <view class="status-card" wx:if="{{loading}}">
+    <text>正在加载分类结果...</text>
+  </view>
+
+  <view class="status-card" wx:elif="{{errorMessage}}">
+    <text>{{errorMessage}}</text>
+  </view>
+
+  <view wx:elif="{{item}}">
+    <view class="hero-card">
+      <category-badge
+        text="{{item.category.name}}"
+        code="{{item.category.code}}"
+        color="{{item.category.color}}"
+      />
+      <text class="item-name">{{item.name}}</text>
+      <text class="item-desc">{{item.description}}</text>
+    </view>
+
+    <view class="info-card">
+      <text class="section-title">分类原因</text>
+      <text class="section-content">{{item.reason || '暂无说明'}}</text>
+    </view>
+
+    <view class="info-card">
+      <text class="section-title">主要成分</text>
+      <text class="section-content">{{item.components || '暂无说明'}}</text>
+    </view>
+
+    <view class="info-card">
+      <text class="section-title">投放建议</text>
+      <text class="section-content">{{item.tips || '暂无投放建议'}}</text>
+    </view>
+
+    <view class="primary-action" bindtap="goKnowledge">
+      <text>查看知识图谱</text>
+    </view>
+
+    <view class="info-card" wx:if="{{item.relatedItems.length}}">
+      <text class="section-title">相关物品</text>
+      <view class="related-list">
+        <view
+          class="related-item"
+          wx:for="{{item.relatedItems}}"
+          wx:key="id"
+          bindtap="goRelatedDetail"
+          data-id="{{item.id}}"
+        >
+          <text class="related-name">{{item.name}}</text>
+          <text class="related-tag">{{item.category.name}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
 </view>

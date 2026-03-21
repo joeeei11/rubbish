@@ -1,1 +1,6 @@
-{"navigationBarTitleText": "knowledge"}
+{
+  "navigationBarTitleText": "知识图谱",
+  "usingComponents": {
+    "echarts-graph": "/components/echarts-graph/echarts-graph"
+  }
+}

@@ -1,1 +1,94 @@
-{}
+.container {
+  min-height: 100vh;
+  padding: 28rpx;
+  background: linear-gradient(180deg, #ECFDF5 0%, #F8FAFC 50%, #FFFFFF 100%);
+  box-sizing: border-box;
+}
+
+.hero-card,
+.info-card,
+.status-card {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  box-shadow: 0 14rpx 36rpx rgba(15, 23, 42, 0.08);
+}
+
+.hero-card {
+  padding: 30rpx;
+}
+
+.item-name {
+  display: block;
+  margin-top: 18rpx;
+  font-size: 42rpx;
+  font-weight: 700;
+  color: #111827;
+}
+
+.item-desc {
+  display: block;
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  color: #4B5563;
+  line-height: 1.7;
+}
+
+.info-card,
+.status-card {
+  margin-top: 24rpx;
+  padding: 28rpx;
+}
+
+.section-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #14532D;
+}
+
+.section-content {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: #374151;
+  line-height: 1.7;
+}
+
+.primary-action {
+  margin-top: 24rpx;
+  padding: 28rpx;
+  border-radius: 24rpx;
+  text-align: center;
+  background: linear-gradient(135deg, #16A34A 0%, #22C55E 100%);
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.related-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.related-item {
+  padding: 22rpx 20rpx;
+  border-radius: 20rpx;
+  background: #F8FAFC;
+  border: 2rpx solid #E5E7EB;
+}
+
+.related-name {
+  display: block;
+  font-size: 28rpx;
+  color: #111827;
+  font-weight: 600;
+}
+
+.related-tag {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #6B7280;
+}

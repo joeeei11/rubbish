@@ -1,4 +1,34 @@
-<!-- article 页面 — Phase 后续实现 -->
 <view class="container">
-  <text>article 页面开发中...</text>
+  <view class="status-card" wx:if="{{loading}}">
+    <text>正在加载内容...</text>
+  </view>
+
+  <view class="status-card" wx:elif="{{errorMessage}}">
+    <text>{{errorMessage}}</text>
+  </view>
+
+  <view wx:elif="{{mode === 'detail' && article}}" class="detail-card">
+    <text class="article-title">{{article.title}}</text>
+    <text class="article-meta">阅读量 {{article.view_count || 0}}</text>
+    <text class="article-content">{{article.content}}</text>
+  </view>
+
+  <view wx:elif="{{mode === 'list'}}" class="list-wrap">
+    <view class="hero-card">
+      <text class="hero-title">垃圾分类科普</text>
+      <text class="hero-desc">从材料、风险和处理方式理解分类逻辑，而不是只背答案。</text>
+    </view>
+
+    <view
+      class="article-card"
+      wx:for="{{articles}}"
+      wx:key="id"
+      bindtap="openArticle"
+      data-id="{{item.id}}"
+    >
+      <text class="card-title">{{item.title}}</text>
+      <text class="card-summary">{{item.summary}}</text>
+      <text class="card-meta">分类标签：{{item.category_tag || '通用'}}</text>
+    </view>
+  </view>
 </view>

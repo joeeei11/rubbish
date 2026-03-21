@@ -1,4 +1,44 @@
-<!-- search 页面 — Phase 后续实现 -->
 <view class="container">
-  <text>search 页面开发中...</text>
+  <view class="hero-card">
+    <text class="hero-title">文字搜索</text>
+    <text class="hero-desc">输入垃圾名称、别名或日常叫法，快速查看分类结果。</text>
+  </view>
+
+  <view class="search-box">
+    <input
+      class="search-input"
+      placeholder="例如：矿泉水瓶、干电池、纸巾"
+      bindinput="handleInput"
+      value="{{keyword}}"
+      confirm-type="search"
+    />
+  </view>
+
+  <view class="status-text" wx:if="{{loading}}">
+    <text>正在搜索...</text>
+  </view>
+
+  <view class="result-list" wx:if="{{items.length}}">
+    <view
+      class="result-item"
+      wx:for="{{items}}"
+      wx:key="id"
+      bindtap="goDetail"
+      data-id="{{item.id}}"
+    >
+      <view class="result-main">
+        <text class="result-name">{{item.name}}</text>
+        <text class="result-desc">{{item.reason || item.description}}</text>
+      </view>
+      <category-badge
+        text="{{item.category.name}}"
+        code="{{item.category.code}}"
+        color="{{item.category.color}}"
+      />
+    </view>
+  </view>
+
+  <view class="empty-state" wx:elif="{{searched}}">
+    <text>{{emptyText}}</text>
+  </view>
 </view>

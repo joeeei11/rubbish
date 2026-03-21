@@ -1,4 +1,20 @@
-<!-- knowledge 页面 — Phase 后续实现 -->
 <view class="container">
-  <text>knowledge 页面开发中...</text>
+  <view class="hero-card">
+    <text class="hero-title">知识图谱</text>
+    <text class="hero-desc">点击相关节点，可以切换图谱中心，查看相近物品之间的关系。</text>
+  </view>
+
+  <view class="status-card" wx:if="{{loading}}">
+    <text>正在加载图谱...</text>
+  </view>
+
+  <view class="status-card" wx:elif="{{errorMessage}}">
+    <text>{{errorMessage}}</text>
+  </view>
+
+  <echarts-graph
+    wx:elif="{{graphData}}"
+    graph-data="{{graphData}}"
+    bind:nodetap="handleNodeTap"
+  />
 </view>

@@ -2,7 +2,7 @@
  * 用户认证工具
  * 封装微信登录流程：wx.login → 后端 /user/login → 存储 token
  */
-const { API_BASE, STORAGE_KEYS } = require('./constant')
+const { STORAGE_KEYS } = require('./constant')
 const { post } = require('./request')
 
 /**
@@ -24,7 +24,7 @@ function login() {
 
         post('/user/login', { code: loginRes.code })
           .then(res => {
-            const { token, userInfo } = res.data
+            const { token, userInfo } = res
 
             // 持久化到 Storage
             wx.setStorageSync(STORAGE_KEYS.TOKEN, token)

@@ -7,7 +7,7 @@ import os
 from datetime import datetime, timezone, timedelta
 
 import jwt
-from flask import g, request
+from flask import current_app, g, has_app_context, request
 
 from app.utils.response import error, ErrorCode
 
@@ -17,6 +17,11 @@ TOKEN_EXPIRE_SECONDS = 7200
 
 def _get_secret() -> str:
     """从环境变量获取 JWT 密钥"""
+    if has_app_context():
+        secret = current_app.config.get("SECRET_KEY")
+        if secret:
+            return secret
+
     secret = os.getenv("SECRET_KEY", "dev-secret-please-change-in-production")
     return secret
 
@@ -71,8 +76,9 @@ def require_auth(func):
             return error(ErrorCode.UNAUTHORIZED, "token 无效")
 
         # 延迟导入，避免循环依赖
+        from app.models import db
         from app.models.user import User
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if user is None:
             return error(ErrorCode.UNAUTHORIZED, "用户不存在")
 

@@ -2,7 +2,7 @@
 用户认证模块测试
 覆盖：token生成与验证、过期场景、无效token、require_auth装饰器、登录接口
 """
-import time
+import os
 import pytest
 from unittest.mock import patch, MagicMock
 
@@ -18,6 +18,10 @@ from app.utils.auth import generate_token, verify_token, TOKEN_EXPIRE_SECONDS
 @pytest.fixture(scope="module")
 def app():
     """创建测试用 Flask 应用（SQLite 内存库）"""
+    previous_database_url = os.environ.get("DATABASE_URL")
+    previous_redis_url = os.environ.get("REDIS_URL")
+    os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+    os.environ["REDIS_URL"] = ""
     application = create_app("development")
     application.config.update({
         "TESTING": True,
@@ -28,6 +32,16 @@ def app():
         _db.create_all()
         yield application
         _db.drop_all()
+
+    if previous_database_url is None:
+        os.environ.pop("DATABASE_URL", None)
+    else:
+        os.environ["DATABASE_URL"] = previous_database_url
+
+    if previous_redis_url is None:
+        os.environ.pop("REDIS_URL", None)
+    else:
+        os.environ["REDIS_URL"] = previous_redis_url
 
 
 @pytest.fixture
