@@ -1,0 +1,26 @@
+<!-- pages/index/index.wxml — 首页功能入口 -->
+<view class="container">
+  <view class="header">
+    <text class="title">智能垃圾分类</text>
+    <text class="subtitle">拍照 / 语音 / 搜索，一键识别</text>
+  </view>
+
+  <view class="actions">
+    <view class="action-item" bindtap="goCamera">
+      <text class="action-icon">📷</text>
+      <text class="action-label">拍照识别</text>
+    </view>
+    <view class="action-item" bindtap="goVoice">
+      <text class="action-icon">🎤</text>
+      <text class="action-label">语音查询</text>
+    </view>
+    <view class="action-item" bindtap="goSearch">
+      <text class="action-icon">🔍</text>
+      <text class="action-label">文字搜索</text>
+    </view>
+    <view class="action-item" bindtap="goKnowledge">
+      <text class="action-icon">🌐</text>
+      <text class="action-label">知识图谱</text>
+    </view>
+  </view>
+</view>

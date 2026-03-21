@@ -1,0 +1,13 @@
+{
+  "0": "recyclable",
+  "1": "hazardous",
+  "2": "kitchen",
+  "3": "other",
+  "_comment": "MobileNetV3-Small 四分类输出索引映射，与 Category.code 对应",
+  "_labels": {
+    "recyclable": "可回收物",
+    "hazardous": "有害垃圾",
+    "kitchen": "厨余垃圾",
+    "other": "其他垃圾"
+  }
+}

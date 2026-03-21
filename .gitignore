@@ -1,0 +1,38 @@
+# 环境变量（绝不提交）
+.env
+
+# 模型权重（体积过大）
+*.pth
+*.pt
+ai_model/weights/
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 虚拟环境
+venv/
+.venv/
+env/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# 上传的临时图片
+backend/uploads/
+
+# 日志
+*.log
+logs/
+
+# 迁移缓存（保留迁移脚本，排除缓存）
+backend/migrations/__pycache__/
