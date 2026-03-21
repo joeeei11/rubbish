@@ -45,9 +45,10 @@ def create_app(env=None):
 def _register_blueprints(app):
     """注册所有蓝图"""
     from app.api.health import health_bp
+    from app.api.user import user_bp
 
-    # Phase 2 及后续模块的蓝图在各自 Phase 中注册
     app.register_blueprint(health_bp, url_prefix="/api/v1")
+    app.register_blueprint(user_bp, url_prefix="/api/v1")
 
 
 def _register_error_handlers(app):
