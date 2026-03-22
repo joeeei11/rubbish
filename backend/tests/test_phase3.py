@@ -2,6 +2,7 @@
 Phase 3 搜索、详情、图谱与文章接口测试
 """
 import os
+from unittest.mock import patch
 import pytest
 
 from app import create_app
@@ -162,6 +163,36 @@ def test_search_service_returns_battery_by_keyword(app):
 
     names = [item["name"] for item in payload["list"]]
     assert "干电池" in names
+
+
+def test_search_service_uses_cache_for_same_keyword(app):
+    fake_cache = {}
+
+    class FakeRedis:
+        def ping(self):
+            return True
+
+        def get(self, key):
+            return fake_cache.get(key)
+
+        def setex(self, key, ttl, value):
+            fake_cache[key] = value
+
+    with app.app_context():
+        items = GarbageItem.query.filter(GarbageItem.name.in_(["矿泉水瓶", "可乐瓶"])).all()
+        with patch("app.services.search_service._get_redis_client", return_value=FakeRedis()), patch(
+            "app.services.search_service._run_fulltext_search",
+            return_value=[],
+        ), patch(
+            "app.services.search_service._run_like_search",
+            return_value=items,
+        ) as mock_like_search:
+            first_payload = search_by_keyword("矿泉水瓶", 1, 10)
+            second_payload = search_by_keyword("矿泉水瓶", 1, 10)
+
+    assert [item["name"] for item in first_payload["list"]] == [item["name"] for item in second_payload["list"]]
+    assert "矿泉水瓶" in [item["name"] for item in first_payload["list"]]
+    assert mock_like_search.call_count == 1
 
 
 def test_get_item_by_id_contains_related_items(app):

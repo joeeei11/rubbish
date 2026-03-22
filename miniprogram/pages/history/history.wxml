@@ -1,4 +1,47 @@
-<!-- history 页面 — Phase 后续实现 -->
 <view class="container">
-  <text>history 页面开发中...</text>
+  <view class="hero-card">
+    <text class="hero-title">查询历史</text>
+    <text class="hero-desc">最近的拍照、语音和文字搜索都会保存在这里，方便回看分类依据。</text>
+  </view>
+
+  <view class="status-card" wx:if="{{loading}}">
+    <text>正在加载历史记录...</text>
+  </view>
+
+  <view class="history-list" wx:elif="{{histories.length}}">
+    <view
+      class="history-item"
+      wx:for="{{histories}}"
+      wx:key="id"
+      bindtap="goDetail"
+      data-id="{{item.garbageItem && item.garbageItem.id}}"
+    >
+      <view class="history-head">
+        <view class="type-badge">
+          <text class="type-icon">{{item.typeIcon}}</text>
+          <text class="type-text">{{item.typeText}}</text>
+        </view>
+        <text class="time-text">{{item.createdAtText}}</text>
+      </view>
+
+      <text class="history-name">{{item.displayName}}</text>
+      <text class="history-desc">{{item.displayDesc}}</text>
+
+      <view class="history-foot">
+        <category-badge
+          text="{{item.categoryName}}"
+          code="{{item.categoryCode}}"
+          color="{{item.categoryColor}}"
+        />
+        <text class="query-input">查询内容：{{item.queryInput || '无'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:else>
+    <text>{{emptyText}}</text>
+    <view class="empty-action" wx:if="{{needLogin}}" bindtap="retryLogin">
+      {{loginLoading ? '登录中...' : '重新登录'}}
+    </view>
+  </view>
 </view>

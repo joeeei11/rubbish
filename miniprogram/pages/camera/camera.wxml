@@ -1,4 +1,43 @@
-<!-- camera 页面 — Phase 后续实现 -->
 <view class="container">
-  <text>camera 页面开发中...</text>
+  <view class="hero-card">
+    <text class="hero-title">拍照识别</text>
+    <text class="hero-desc">拍一张垃圾照片，系统会在上传前自动压缩并识别分类结果。</text>
+  </view>
+
+  <view class="preview-card" wx:if="{{imagePath}}">
+    <image class="preview-image" src="{{imagePath}}" mode="aspectFill" />
+    <text class="preview-tip">已选择图片，正在准备识别结果</text>
+  </view>
+
+  <view class="action-group">
+    <button class="primary-button" bindtap="chooseFromCamera" loading="{{uploading}}" disabled="{{uploading}}">
+      立即拍照
+    </button>
+    <button class="secondary-button" bindtap="chooseFromAlbum" disabled="{{uploading}}">
+      从相册选择
+    </button>
+  </view>
+
+  <view class="status-card" wx:if="{{uploading}}">
+    <text class="status-title">正在上传识别</text>
+    <text class="status-desc">图片会先压缩到最长边 512px，再提交后端推理。</text>
+  </view>
+
+  <view class="status-card error" wx:if="{{errorMessage}}">
+    <text class="status-title">识别失败</text>
+    <text class="status-desc">{{errorMessage}}</text>
+  </view>
+
+  <view class="tips-card">
+    <text class="tips-title">拍摄建议</text>
+    <text class="tips-item">尽量让垃圾主体位于画面中央，避免背景过于复杂。</text>
+    <text class="tips-item">光线不足时优先使用相册中更清晰的照片。</text>
+    <text class="tips-item">若识别不确定，可在结果页继续使用文字搜索确认。</text>
+  </view>
+
+  <canvas
+    canvas-id="imageCanvas"
+    class="hidden-canvas"
+    style="width: 512px; height: 512px;"
+  />
 </view>

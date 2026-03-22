@@ -10,27 +10,43 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - "3307:3306"
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-ppassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
 
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file:
       - ./backend/.env
     ports:
       - "5000:8000"
     volumes:
       - ./backend/uploads:/app/uploads
+      - ./backend/ai_model/weights:/app/ai_model/weights:ro
+      - ./data:/data:ro
+      - backend_migrations:/app/migrations
 
   nginx:
     image: nginx:alpine
@@ -44,3 +60,4 @@ services:
 
 volumes:
   mysql_data:
+  backend_migrations:

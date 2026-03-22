@@ -7,42 +7,123 @@
     <text>{{errorMessage}}</text>
   </view>
 
-  <view wx:elif="{{item}}">
-    <view class="hero-card">
-      <category-badge
-        text="{{item.category.name}}"
-        code="{{item.category.code}}"
-        color="{{item.category.color}}"
+  <view wx:else>
+    <view class="hero-card" wx:if="{{imageResult}}">
+      <image
+        class="hero-image"
+        wx:if="{{imageResult.localImagePath}}"
+        src="{{imageResult.localImagePath}}"
+        mode="aspectFill"
       />
-      <text class="item-name">{{item.name}}</text>
-      <text class="item-desc">{{item.description}}</text>
+      <view class="hero-header">
+        <category-badge
+          text="{{imageResult.category}}"
+          code="{{imageResult.categoryCode}}"
+          color="{{item && item.category ? item.category.color : ''}}"
+        />
+        <text class="confidence-text">置信度 {{imageResult.confidenceText}}</text>
+      </view>
+      <text class="item-name">{{item ? item.name : imageResult.labelZh}}</text>
+      <text class="item-desc">
+        {{imageResult.uncertain ? '结果存在一定不确定性，建议结合文字搜索进一步确认。' : '已完成图像识别，可继续查看物品详情与知识图谱。'}}
+      </text>
     </view>
 
-    <view class="info-card">
-      <text class="section-title">分类原因</text>
-      <text class="section-content">{{item.reason || '暂无说明'}}</text>
+    <view class="warning-card" wx:if="{{imageResult && imageResult.uncertain}}">
+      <text class="section-title">识别不确定</text>
+      <text class="section-content">可以继续用文字搜索确认，也可以重新拍一张更清晰的照片。</text>
+      <view class="action-row">
+        <view class="secondary-action" bindtap="goSearchSuggestion">
+          <text>去文字搜索</text>
+        </view>
+        <view class="ghost-action" bindtap="goBackToCamera">
+          <text>重新拍照</text>
+        </view>
+      </view>
     </view>
 
-    <view class="info-card">
-      <text class="section-title">主要成分</text>
-      <text class="section-content">{{item.components || '暂无说明'}}</text>
+    <view class="info-card" wx:if="{{imageResult && imageResult.top3.length}}">
+      <text class="section-title">候选结果</text>
+      <view class="top-list">
+        <view class="top-item" wx:for="{{imageResult.top3}}" wx:key="label">
+          <text class="top-name">{{item.label_zh}}</text>
+          <text class="top-score">{{item.confidenceText}}</text>
+        </view>
+      </view>
     </view>
 
-    <view class="info-card">
-      <text class="section-title">投放建议</text>
-      <text class="section-content">{{item.tips || '暂无投放建议'}}</text>
+    <view wx:if="{{item}}">
+      <view class="hero-card" wx:if="{{!imageResult}}">
+        <category-badge
+          text="{{item.category.name}}"
+          code="{{item.category.code}}"
+          color="{{item.category.color}}"
+        />
+        <text class="item-name">{{item.name}}</text>
+        <text class="item-desc">{{item.description}}</text>
+      </view>
+
+      <view class="info-card">
+        <text class="section-title">分类原因</text>
+        <text class="section-content">{{item.reason || '暂无说明'}}</text>
+      </view>
+
+      <view class="info-card">
+        <text class="section-title">主要成分</text>
+        <text class="section-content">{{item.components || '暂无说明'}}</text>
+      </view>
+
+      <view class="info-card">
+        <text class="section-title">投放建议</text>
+        <text class="section-content">{{item.tips || '暂无投放建议'}}</text>
+      </view>
+
+      <view class="primary-action" bindtap="goKnowledge">
+        <text>查看知识图谱</text>
+      </view>
+
+      <view class="info-card" wx:if="{{item.relatedItems.length}}">
+        <text class="section-title">相关物品</text>
+        <view class="related-list">
+          <view
+            class="related-item"
+            wx:for="{{item.relatedItems}}"
+            wx:key="id"
+            bindtap="goRelatedDetail"
+            data-id="{{item.id}}"
+          >
+            <text class="related-name">{{item.name}}</text>
+            <text class="related-tag">{{item.category.name}}</text>
+          </view>
+        </view>
+      </view>
     </view>
 
-    <view class="primary-action" bindtap="goKnowledge">
-      <text>查看知识图谱</text>
+    <view wx:if="{{!item && imageResult}}">
+      <view class="info-card" wx:if="{{imageResult.categoryDescription}}">
+        <text class="section-title">分类说明</text>
+        <text class="section-content">{{imageResult.categoryDescription}}</text>
+      </view>
+      <view class="info-card" wx:if="{{imageResult.disposalGuide}}">
+        <text class="section-title">投放建议</text>
+        <text class="section-content">{{imageResult.disposalGuide}}</text>
+      </view>
+      <view class="action-row" style="margin: 24rpx 0;">
+        <view class="secondary-action" bindtap="goSearchSuggestion">
+          <text>用文字搜索具体物品</text>
+        </view>
+        <view class="ghost-action" bindtap="goBackToCamera">
+          <text>重新拍照</text>
+        </view>
+      </view>
     </view>
 
-    <view class="info-card" wx:if="{{item.relatedItems.length}}">
-      <text class="section-title">相关物品</text>
+    <view class="info-card" wx:elif="{{imageResult && imageResult.relatedItems.length}}">
+      <text class="section-title">同类参考物品</text>
       <view class="related-list">
         <view
           class="related-item"
-          wx:for="{{item.relatedItems}}"
+          wx:for="{{imageResult.relatedItems}}"
           wx:key="id"
           bindtap="goRelatedDetail"
           data-id="{{item.id}}"

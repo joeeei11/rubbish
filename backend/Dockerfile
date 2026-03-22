@@ -1,6 +1,7 @@
 FROM python:3.11-slim
 
 WORKDIR /app
+ENV PYTHONPATH=/app
 
 # 安装系统依赖（Pillow 需要 libjpeg）
 RUN apt-get update && apt-get install -y \
@@ -15,6 +16,9 @@ RUN pip install --no-cache-dir torch torchvision --index-url https://download.py
 
 COPY . .
 
+# 确保入口脚本有执行权限
+RUN chmod +x entrypoint.sh
+
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "120", "wsgi:app"]
+ENTRYPOINT ["./entrypoint.sh"]

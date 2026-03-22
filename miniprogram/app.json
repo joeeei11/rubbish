@@ -15,21 +15,36 @@
     "navigationBarTitleText": "智能垃圾分类",
     "navigationBarTextStyle": "white"
   },
+  "requiredPrivateInfos": [],
+  "permission": {
+    "scope.camera": {
+      "desc": "用于拍照识别垃圾分类"
+    },
+    "scope.record": {
+      "desc": "用于语音识别垃圾分类"
+    }
+  },
   "tabBar": {
     "color": "#999",
     "selectedColor": "#4CAF50",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "images/tabbar/home.png",
+        "selectedIconPath": "images/tabbar/home_active.png"
       },
       {
         "pagePath": "pages/history/history",
-        "text": "历史"
+        "text": "历史",
+        "iconPath": "images/tabbar/history.png",
+        "selectedIconPath": "images/tabbar/history_active.png"
       },
       {
         "pagePath": "pages/article/article",
-        "text": "科普"
+        "text": "科普",
+        "iconPath": "images/tabbar/article.png",
+        "selectedIconPath": "images/tabbar/article_active.png"
       }
     ]
   },

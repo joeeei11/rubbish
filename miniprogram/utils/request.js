@@ -109,4 +109,39 @@ function uploadImage(filePath) {
   })
 }
 
-module.exports = { request, get, post, uploadImage }
+/**
+ * 文件上传（语音识别）
+ * @param {string} filePath - 本地音频路径
+ * @returns {Promise<object>}
+ */
+function uploadAudio(filePath) {
+  const token = wx.getStorageSync(STORAGE_KEYS.TOKEN)
+  const header = token ? { Authorization: `Bearer ${token}` } : {}
+
+  return new Promise((resolve, reject) => {
+    wx.uploadFile({
+      url: API_BASE + '/classify/voice',
+      filePath,
+      name: 'audio',
+      header,
+      timeout: REQUEST_TIMEOUT,
+      success(res) {
+        try {
+          const body = JSON.parse(res.data)
+          if (body && body.code === 200) {
+            resolve(body.data)
+          } else {
+            reject(body || { code: -1, message: '上传失败' })
+          }
+        } catch (e) {
+          reject({ code: -3, message: '响应解析失败' })
+        }
+      },
+      fail(err) {
+        reject({ code: -2, message: '上传失败，请检查网络', raw: err })
+      },
+    })
+  })
+}
+
+module.exports = { request, get, post, uploadImage, uploadAudio }

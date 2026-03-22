@@ -23,6 +23,12 @@ backend/instance/
 
 # 小程序 npm
 miniprogram/node_modules/
+miniprogram/miniprogram_npm/
+miniprogram/project.private.config.json
+
+# 数据集（体积过大，不提交）
+data/garbage_dataset/train/
+data/garbage_dataset/val/
 
 # 系统文件
 .DS_Store
@@ -34,6 +40,7 @@ Thumbs.db
 
 # 上传的临时图片
 backend/uploads/
+backend/integration-uploads/
 
 # 日志
 *.log

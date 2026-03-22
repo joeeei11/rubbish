@@ -9,6 +9,16 @@ Page({
     emptyText: '输入垃圾名称，开始搜索',
   },
 
+  onLoad(options) {
+    const keyword = decodeURIComponent(options.keyword || '').trim()
+    if (!keyword) {
+      return
+    }
+
+    this.setData({ keyword })
+    this.fetchSearchResult(keyword)
+  },
+
   onUnload() {
     if (this.searchTimer) {
       clearTimeout(this.searchTimer)

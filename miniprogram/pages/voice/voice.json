@@ -1,1 +1,6 @@
-{"navigationBarTitleText": "voice"}
+{
+  "navigationBarTitleText": "语音查询",
+  "usingComponents": {
+    "category-badge": "/components/category-badge/category-badge"
+  }
+}

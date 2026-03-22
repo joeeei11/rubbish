@@ -1,4 +1,4 @@
-const echarts = require('echarts')
+const { echarts, patchCanvasForEcharts } = require('../../utils/echarts-wx')
 
 function buildOption(graphData) {
   const categories = graphData.categories || []
@@ -105,6 +105,7 @@ Component({
       this.ecComponent = this.selectComponent('#knowledge-graph')
       if (this.ecComponent) {
         this.ecComponent.init((canvas, width, height, dpr) => {
+          patchCanvasForEcharts(canvas)
           const chart = echarts.init(canvas, null, {
             width,
             height,

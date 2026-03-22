@@ -1,4 +1,87 @@
-<!-- voice 页面 — Phase 后续实现 -->
 <view class="container">
-  <text>voice 页面开发中...</text>
+  <view class="hero-card">
+    <text class="hero-title">语音查询</text>
+    <text class="hero-desc">按住按钮说出垃圾名称，系统会自动识别文字并返回分类结果。</text>
+  </view>
+
+  <view class="record-panel">
+    <view class="wave-group">
+      <view
+        class="wave-bar {{recording ? 'wave-bar--active' : ''}}"
+        wx:for="{{waveBars}}"
+        wx:key="index"
+        style="height: {{item}}rpx;"
+      ></view>
+    </view>
+
+    <text class="panel-title">
+      {{recording ? '正在录音...' : (recognizing ? '识别中...' : '按住按钮开始说话')}}
+    </text>
+    <text class="panel-desc">
+      {{recording ? '松开后立即上传识别，最长 10 秒' : '建议直接说“矿泉水瓶”“干电池”等物品名称'}}
+    </text>
+
+    <view
+      class="record-button {{recording ? 'record-button--active' : ''}} {{recognizing ? 'record-button--disabled' : ''}}"
+      bindtouchstart="handleRecordStart"
+      bindtouchend="handleRecordEnd"
+      bindtouchcancel="handleRecordCancel"
+    >
+      <text class="record-button-text">
+        {{recording ? '松开识别' : (recognizing ? '识别中...' : '按住说话')}}
+      </text>
+    </view>
+  </view>
+
+  <view class="permission-card" wx:if="{{permissionDenied}}">
+    <text class="permission-title">录音权限未开启</text>
+    <text class="permission-desc">请先开启录音权限，或先使用文字搜索继续查询。</text>
+    <view class="permission-actions">
+      <view class="secondary-action" bindtap="goSearch">改用文字搜索</view>
+      <view class="primary-action" bindtap="openSettings">打开设置</view>
+    </view>
+  </view>
+
+  <view class="result-card">
+    <text class="result-title">识别文字</text>
+    <text class="recognized-text {{recognizedText ? '' : 'recognized-text--empty'}}">
+      {{recognizedText || '暂未识别'}}
+    </text>
+  </view>
+
+  <view class="status-card" wx:if="{{recognizing || errorMessage}}">
+    <text class="status-text {{errorMessage ? 'status-text--error' : ''}}">
+      {{errorMessage || '识别中，请稍候...'}}
+    </text>
+  </view>
+
+  <view class="result-list" wx:if="{{results.length}}">
+    <view class="section-head">
+      <text class="section-title">匹配结果</text>
+      <view class="text-link" bindtap="goSearch">改用文字搜索</view>
+    </view>
+
+    <view
+      class="result-item"
+      wx:for="{{results}}"
+      wx:key="id"
+      bindtap="goDetail"
+      data-id="{{item.id}}"
+    >
+      <view class="result-main">
+        <text class="result-name">{{item.name}}</text>
+        <text class="result-desc">{{item.reason || item.description}}</text>
+      </view>
+      <category-badge
+        text="{{item.category.name}}"
+        code="{{item.category.code}}"
+        color="{{item.category.color}}"
+      />
+    </view>
+  </view>
+
+  <view class="empty-state" wx:elif="{{!recognizing}}">
+    <text>{{emptyText}}</text>
+    <view class="empty-action" bindtap="goSearch">去文字搜索</view>
+  </view>
 </view>

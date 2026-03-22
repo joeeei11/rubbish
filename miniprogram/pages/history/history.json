@@ -1,1 +1,6 @@
-{"navigationBarTitleText": "history"}
+{
+  "navigationBarTitleText": "查询历史",
+  "usingComponents": {
+    "category-badge": "/components/category-badge/category-badge"
+  }
+}

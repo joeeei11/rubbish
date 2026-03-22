@@ -1,7 +1,7 @@
 <view class="container">
   <view class="hero-card">
     <text class="hero-title">文字搜索</text>
-    <text class="hero-desc">输入垃圾名称、别名或日常叫法，快速查看分类结果。</text>
+    <text class="hero-desc">输入垃圾名称、别名或常见叫法，快速查看分类结果。</text>
   </view>
 
   <view class="search-box">

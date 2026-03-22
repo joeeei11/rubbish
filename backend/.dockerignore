@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.env
+.env.example
+instance/
+uploads/
+integration-uploads/
+*.log
+.vscode/
+.idea/
+# 模型权重通过 volume 挂载，无需打入镜像
+ai_model/weights/*.pth

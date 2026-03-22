@@ -1,6 +1,6 @@
 {
   "component": true,
   "usingComponents": {
-    "ec-canvas": "echarts-for-weixin"
+    "ec-canvas": "/miniprogram_npm/echarts-for-weixin/index"
   }
 }
