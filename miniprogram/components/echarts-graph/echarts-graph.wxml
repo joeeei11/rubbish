@@ -1,10 +1,12 @@
 <view class="graph-shell">
-  <ec-canvas
+  <canvas
+    type="2d"
     id="knowledge-graph"
-    canvas-id="knowledge-graph"
-    echarts="{{echarts}}"
-    ec="{{ec}}"
-  />
+    class="graph-canvas"
+    bindtouchstart="touchStart"
+    bindtouchmove="touchMove"
+    bindtouchend="touchEnd"
+  ></canvas>
   <view class="graph-tip">
     <text>支持拖拽、缩放和点击节点切换中心物品</text>
   </view>

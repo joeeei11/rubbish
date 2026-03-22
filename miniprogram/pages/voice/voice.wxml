@@ -1,64 +1,37 @@
 <view class="container">
   <view class="hero-card">
     <text class="hero-title">语音查询</text>
-    <text class="hero-desc">按住按钮说出垃圾名称，系统会自动识别文字并返回分类结果。</text>
+    <text class="hero-desc">点击输入框后，按键盘上的🎤按钮说话，识别文字后点搜索即可。</text>
   </view>
 
-  <view class="record-panel">
-    <view class="wave-group">
-      <view
-        class="wave-bar {{recording ? 'wave-bar--active' : ''}}"
-        wx:for="{{waveBars}}"
-        wx:key="index"
-        style="height: {{item}}rpx;"
-      ></view>
+  <view class="search-bar">
+    <input
+      class="search-input"
+      placeholder="说出或输入垃圾名称"
+      value="{{keyword}}"
+      focus="{{inputFocus}}"
+      confirm-type="search"
+      bindinput="onInputChange"
+      bindconfirm="onInputConfirm"
+    />
+    <view class="clear-btn" wx:if="{{keyword}}" bindtap="clearInput">
+      <text>✕</text>
     </view>
-
-    <text class="panel-title">
-      {{recording ? '正在录音...' : (recognizing ? '识别中...' : '按住按钮开始说话')}}
-    </text>
-    <text class="panel-desc">
-      {{recording ? '松开后立即上传识别，最长 10 秒' : '建议直接说“矿泉水瓶”“干电池”等物品名称'}}
-    </text>
-
     <view
-      class="record-button {{recording ? 'record-button--active' : ''}} {{recognizing ? 'record-button--disabled' : ''}}"
-      bindtouchstart="handleRecordStart"
-      bindtouchend="handleRecordEnd"
-      bindtouchcancel="handleRecordCancel"
+      class="search-btn {{searching ? 'search-btn--disabled' : ''}}"
+      bindtap="handleSearch"
     >
-      <text class="record-button-text">
-        {{recording ? '松开识别' : (recognizing ? '识别中...' : '按住说话')}}
-      </text>
+      <text>{{searching ? '搜索中' : '搜索'}}</text>
     </view>
   </view>
 
-  <view class="permission-card" wx:if="{{permissionDenied}}">
-    <text class="permission-title">录音权限未开启</text>
-    <text class="permission-desc">请先开启录音权限，或先使用文字搜索继续查询。</text>
-    <view class="permission-actions">
-      <view class="secondary-action" bindtap="goSearch">改用文字搜索</view>
-      <view class="primary-action" bindtap="openSettings">打开设置</view>
-    </view>
-  </view>
-
-  <view class="result-card">
-    <text class="result-title">识别文字</text>
-    <text class="recognized-text {{recognizedText ? '' : 'recognized-text--empty'}}">
-      {{recognizedText || '暂未识别'}}
-    </text>
-  </view>
-
-  <view class="status-card" wx:if="{{recognizing || errorMessage}}">
-    <text class="status-text {{errorMessage ? 'status-text--error' : ''}}">
-      {{errorMessage || '识别中，请稍候...'}}
-    </text>
+  <view class="status-card" wx:if="{{errorMessage}}">
+    <text class="status-text status-text--error">{{errorMessage}}</text>
   </view>
 
   <view class="result-list" wx:if="{{results.length}}">
     <view class="section-head">
-      <text class="section-title">匹配结果</text>
-      <view class="text-link" bindtap="goSearch">改用文字搜索</view>
+      <text class="section-title">查询结果</text>
     </view>
 
     <view
@@ -80,8 +53,15 @@
     </view>
   </view>
 
-  <view class="empty-state" wx:elif="{{!recognizing}}">
+  <view class="empty-state" wx:elif="{{!searching}}">
     <text>{{emptyText}}</text>
-    <view class="empty-action" bindtap="goSearch">去文字搜索</view>
+  </view>
+
+  <view class="tips-card">
+    <text class="tips-title">使用提示</text>
+    <text class="tips-item">1. 点击输入框弹出键盘</text>
+    <text class="tips-item">2. 点击键盘左下角的🎤按钮切换到语音输入</text>
+    <text class="tips-item">3. 说出物品名称，如"矿泉水瓶""干电池"</text>
+    <text class="tips-item">4. 识别完成后点击"搜索"按钮</text>
   </view>
 </view>

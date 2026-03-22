@@ -1,265 +1,77 @@
-const { uploadAudio } = require('../../utils/request')
-
-const RECORD_OPTIONS = {
-  duration: 10000,
-  sampleRate: 16000,
-  numberOfChannels: 1,
-  format: 'pcm',
-}
-
-const INITIAL_WAVE_BARS = [44, 68, 92, 68, 44]
+/**
+ * 语音查询页面
+ * 利用微信键盘自带的语音输入功能，用户点击键盘麦克风按钮说话，
+ * 识别结果自动填入输入框，确认后搜索垃圾分类。
+ */
+const { get } = require('../../utils/request')
 
 Page({
   data: {
-    recording: false,
-    recognizing: false,
-    recognizedText: '',
+    keyword: '',
+    searching: false,
     results: [],
     errorMessage: '',
-    emptyText: '按住按钮说出垃圾名称，识别结果会显示在这里',
-    permissionDenied: false,
-    waveBars: INITIAL_WAVE_BARS,
+    emptyText: '点击输入框，使用键盘上的麦克风按钮语音输入',
+    inputFocus: false,
   },
 
-  onLoad() {
-    this.initRecorder()
-    this.checkRecordPermission()
-  },
-
-  onUnload() {
-    this.stopWaveAnimation()
-    if (this.data.recording && this.recorderManager) {
-      try {
-        this.recorderManager.stop()
-      } catch (e) {
-        // 忽略页面销毁时的停止异常
-      }
+  onLoad(options) {
+    const keyword = decodeURIComponent(options.keyword || '')
+    if (keyword) {
+      this.setData({ keyword })
+      this.doSearch(keyword)
     }
   },
 
-  initRecorder() {
-    if (this.recorderManager) {
+  onShow() {
+    // 自动聚焦输入框，弹出键盘
+    this.setData({ inputFocus: true })
+  },
+
+  onInputChange(e) {
+    this.setData({ keyword: e.detail.value })
+  },
+
+  onInputConfirm(e) {
+    const keyword = (e.detail.value || '').trim()
+    if (keyword) {
+      this.doSearch(keyword)
+    }
+  },
+
+  handleSearch() {
+    const keyword = (this.data.keyword || '').trim()
+    if (!keyword) {
+      this.setData({ errorMessage: '请输入或说出垃圾名称' })
       return
     }
-
-    const recorderManager = wx.getRecorderManager()
-    this.recorderManager = recorderManager
-
-    recorderManager.onStart(() => {
-      this.setData({
-        recording: true,
-        recognizing: false,
-        errorMessage: '',
-        recognizedText: '',
-        results: [],
-        emptyText: '请保持说话清晰，松开后会立即识别',
-      })
-      this.startWaveAnimation()
-    })
-
-    recorderManager.onStop((res) => {
-      this.stopWaveAnimation()
-      this.setData({
-        recording: false,
-        waveBars: INITIAL_WAVE_BARS,
-      })
-
-      if (!res || !res.tempFilePath) {
-        this.setData({
-          errorMessage: '未获取到录音文件，请重试',
-          emptyText: '录音未成功保存，请重新按住说话',
-        })
-        return
-      }
-
-      this.uploadRecordedAudio(res.tempFilePath)
-    })
-
-    recorderManager.onError(() => {
-      this.stopWaveAnimation()
-      this.setData({
-        recording: false,
-        recognizing: false,
-        waveBars: INITIAL_WAVE_BARS,
-        errorMessage: '录音失败，请检查权限后重试',
-        emptyText: '录音失败后可改用文字搜索',
-      })
-    })
+    this.doSearch(keyword)
   },
 
-  checkRecordPermission() {
-    return new Promise((resolve) => {
-      wx.getSetting({
-        success: (res) => {
-          const granted = !!(res.authSetting || {})['scope.record']
-          this.setData({ permissionDenied: !granted && res.authSetting && res.authSetting['scope.record'] === false })
-          resolve(granted)
-        },
-        fail: () => resolve(false),
-      })
-    })
-  },
-
-  ensureRecordPermission() {
-    return new Promise((resolve) => {
-      wx.getSetting({
-        success: (res) => {
-          const authSetting = res.authSetting || {}
-          if (authSetting['scope.record'] === true) {
-            this.setData({ permissionDenied: false, errorMessage: '' })
-            resolve(true)
-            return
-          }
-
-          if (authSetting['scope.record'] === false) {
-            this.promptOpenSetting(resolve)
-            return
-          }
-
-          wx.authorize({
-            scope: 'scope.record',
-            success: () => {
-              this.setData({ permissionDenied: false, errorMessage: '' })
-              resolve(true)
-            },
-            fail: () => {
-              this.promptOpenSetting(resolve)
-            },
-          })
-        },
-        fail: () => {
-          this.setData({
-            permissionDenied: true,
-            errorMessage: '无法检查录音权限，请稍后重试',
-          })
-          resolve(false)
-        },
-      })
-    })
-  },
-
-  promptOpenSetting(resolve) {
+  doSearch(keyword) {
     this.setData({
-      permissionDenied: true,
-      errorMessage: '未开启录音权限，暂时无法语音查询',
-      emptyText: '可以先开启录音权限，或改用文字搜索',
-    })
-
-    wx.showModal({
-      title: '需要录音权限',
-      content: '开启录音权限后，才能使用语音查询垃圾分类。',
-      confirmText: '去开启',
-      success: (modalRes) => {
-        if (!modalRes.confirm) {
-          resolve(false)
-          return
-        }
-
-        wx.openSetting({
-          success: (settingRes) => {
-            const granted = !!(settingRes.authSetting || {})['scope.record']
-            this.setData({
-              permissionDenied: !granted,
-              errorMessage: granted ? '' : '未开启录音权限，暂时无法语音查询',
-            })
-            resolve(granted)
-          },
-          fail: () => resolve(false),
-        })
-      },
-      fail: () => resolve(false),
-    })
-  },
-
-  async handleRecordStart() {
-    if (this.data.recording || this.data.recognizing) {
-      return
-    }
-
-    const granted = await this.ensureRecordPermission()
-    if (!granted || !this.recorderManager) {
-      return
-    }
-
-    try {
-      this.recorderManager.start(RECORD_OPTIONS)
-    } catch (e) {
-      this.setData({
-        errorMessage: '启动录音失败，请重试',
-      })
-    }
-  },
-
-  handleRecordEnd() {
-    if (!this.data.recording || !this.recorderManager) {
-      return
-    }
-
-    try {
-      this.recorderManager.stop()
-    } catch (e) {
-      this.setData({
-        recording: false,
-        errorMessage: '停止录音失败，请重试',
-      })
-    }
-  },
-
-  handleRecordCancel() {
-    this.handleRecordEnd()
-  },
-
-  startWaveAnimation() {
-    this.stopWaveAnimation()
-    this.waveTimer = setInterval(() => {
-      if (!this.data.recording) {
-        return
-      }
-
-      this.setData({
-        waveBars: INITIAL_WAVE_BARS.map((base) => {
-          const delta = Math.round(Math.random() * 34) - 12
-          return Math.max(28, base + delta)
-        }),
-      })
-    }, 180)
-  },
-
-  stopWaveAnimation() {
-    if (!this.waveTimer) {
-      return
-    }
-
-    clearInterval(this.waveTimer)
-    this.waveTimer = null
-  },
-
-  uploadRecordedAudio(filePath) {
-    this.setData({
-      recognizing: true,
+      searching: true,
       errorMessage: '',
-      emptyText: '识别中，请稍候...',
+      results: [],
+      emptyText: '搜索中...',
     })
 
-    uploadAudio(filePath)
+    get('/classify/search', { q: keyword }, false)
       .then((data) => {
-        const results = data.results || []
+        const results = data.list || []
         this.setData({
-          recognizedText: data.recognized_text || '',
           results,
-          emptyText: results.length ? '' : '没有找到完全匹配的结果，可改用文字搜索补充关键词',
+          emptyText: results.length ? '' : '没有找到匹配结果，试试换个说法',
         })
       })
       .catch((err) => {
         this.setData({
-          recognizedText: '',
           results: [],
-          errorMessage: err.message || '语音识别失败，请重试或改用文字搜索',
-          emptyText: '识别失败后可以切换到文字搜索继续查询',
+          errorMessage: err.message || '搜索失败，请重试',
         })
       })
       .finally(() => {
-        this.setData({ recognizing: false })
+        this.setData({ searching: false })
       })
   },
 
@@ -268,28 +80,17 @@ Page({
     if (!id) {
       return
     }
-
     wx.navigateTo({
       url: `/pages/result/result?itemId=${id}`,
     })
   },
 
-  goSearch() {
-    const keyword = encodeURIComponent(this.data.recognizedText || '')
-    wx.navigateTo({
-      url: `/pages/search/search?keyword=${keyword}`,
-    })
-  },
-
-  openSettings() {
-    wx.openSetting({
-      success: (res) => {
-        const granted = !!(res.authSetting || {})['scope.record']
-        this.setData({
-          permissionDenied: !granted,
-          errorMessage: granted ? '' : '未开启录音权限，暂时无法语音查询',
-        })
-      },
+  clearInput() {
+    this.setData({
+      keyword: '',
+      results: [],
+      errorMessage: '',
+      emptyText: '点击输入框，使用键盘上的麦克风按钮语音输入',
     })
   },
 })
