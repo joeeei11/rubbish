@@ -7,7 +7,7 @@ from __future__ import annotations
 import os
 
 import jwt
-from flask import Blueprint, request
+from flask import Blueprint, current_app, request
 
 from app.models import db
 from app.models.query_history import QueryHistory
@@ -113,6 +113,7 @@ def classify_image_endpoint():
     except RuntimeError as exc:
         return error(ErrorCode.CLASSIFY_FAILED, str(exc))
     except Exception:
+        current_app.logger.exception("图像识别接口异常")
         return error(ErrorCode.CLASSIFY_FAILED, "图像识别失败，请稍后重试")
 
     _save_query_history(
