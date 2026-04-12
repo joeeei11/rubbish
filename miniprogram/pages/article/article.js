@@ -10,11 +10,24 @@ Page({
   },
 
   onLoad(options) {
-    if (options.id) {
-      this.loadDetail(options.id)
+    // TabBar 页不接受 navigateTo 传参，参数中的 id 实际不会生效
+    // 真正的文章 id 由 onShow 通过 globalData.pendingArticleId 接收
+    this.loadList()
+  },
+
+  onShow() {
+    // 检查是否有待显示的文章（来自首页"今日科普"或列表点击）
+    const app = getApp()
+    const pendingId = app.globalData && app.globalData.pendingArticleId
+    if (pendingId) {
+      app.globalData.pendingArticleId = null
+      this.loadDetail(pendingId)
       return
     }
-    this.loadList()
+    // 从详情返回列表时重置为列表模式
+    if (this.data.mode === 'list' && !this.data.loading) {
+      this.loadList()
+    }
   },
 
   loadList() {
@@ -70,9 +83,11 @@ Page({
     if (!id) {
       return
     }
+    // TabBar 页无法用 navigateTo 跳转自身，直接在当前页切换到详情模式
+    this.loadDetail(id)
+  },
 
-    wx.navigateTo({
-      url: `/pages/article/article?id=${id}`,
-    })
+  backToList() {
+    this.loadList()
   },
 })

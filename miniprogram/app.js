@@ -6,6 +6,7 @@ App({
   globalData: {
     userInfo: null,
     token: null,
+    pendingArticleId: null,  // 用于首页"今日科普"跨 TabBar 传递文章 id
   },
 
   onLaunch() {

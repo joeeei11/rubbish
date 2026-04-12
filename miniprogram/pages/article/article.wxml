@@ -8,6 +8,9 @@
   </view>
 
   <view wx:elif="{{mode === 'detail' && article}}" class="detail-card">
+    <view class="back-btn" bindtap="backToList">
+      <text>← 返回列表</text>
+    </view>
     <text class="article-title">{{article.title}}</text>
     <text class="article-meta">阅读量 {{article.view_count || 0}}</text>
     <text class="article-content">{{article.content}}</text>

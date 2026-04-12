@@ -53,7 +53,7 @@ Page({
       searched: true,
     })
 
-    get('/classify/search', { q: keyword, page: 1, size: 20 }, false)
+    get('/classify/search', { q: keyword, page: 1, size: 20 })
       .then(data => {
         this.setData({
           items: data.list || [],

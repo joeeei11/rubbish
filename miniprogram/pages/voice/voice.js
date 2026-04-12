@@ -56,7 +56,7 @@ Page({
       emptyText: '搜索中...',
     })
 
-    get('/classify/search', { q: keyword }, false)
+    get('/classify/search', { q: keyword })
       .then((data) => {
         const results = data.list || []
         this.setData({

@@ -75,14 +75,12 @@ Page({
 
   openTodayArticle() {
     const article = this.data.todayArticle
-    if (!article || !article.id) {
-      wx.navigateTo({ url: '/pages/article/article' })
-      return
+    // article 是 TabBar 页，不能用 navigateTo，通过 globalData 中转文章 id
+    const app = getApp()
+    if (article && article.id) {
+      app.globalData.pendingArticleId = article.id
     }
-
-    wx.navigateTo({
-      url: `/pages/article/article?id=${article.id}`,
-    })
+    wx.switchTab({ url: '/pages/article/article' })
   },
 
   openCategoryGuide(event) {
